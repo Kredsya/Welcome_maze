@@ -1,0 +1,22 @@
+오전 3:08 2021-04-17
+
+todo list
+
+1-1. game_data chobo, jungsu, gosu의 map 채우기
+1-2. game_data startX, startY 채우기
+
+-2-. mouseCallback에서 각 game_data의 ObjectID 채우도록 하기
+
+3. enterScene에서 각 type(난이도)에 호환되는 게임스타트 구동방식 만들기
+3-1. map에 따른 맵 생성
+
+4. keyCallback에서 키에 따라 이동 변화를 주고 마지막에 게임종결 판정 내리기
+4-1. clock()으로 타이머 출력 (저번에 만든 말 경주 보고 추가하기)
+4-2. main_screen으로 돌아가는 버튼 만들기
+4-3. thumbs_up을 main_screen으로 가면 hide
+
+오전 5:13 2021-04-18
+
+위에 거 1-1 빼고 all clear
+jungsu, gosu 맵 업데이트 필요
+game_data jungsu & gosu 구조체 초기화 실시
