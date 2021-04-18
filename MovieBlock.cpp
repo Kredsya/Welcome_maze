@@ -14,17 +14,19 @@ struct game_data {
 	int map_size, pixel_size, zeroX, zeroY;
 	int startX, startY;
 	int goalX, goalY;
+	bool playable;
 	ObjectID button;
 };
-game_data chobo = { "chobo", 47, 14, 311, 689, 23, 1, 1, 46 };
-game_data jungsu = { "jungsu", 59, 12, 286, 714, 1, 5, 55, 58 };
-game_data gosu = { "gosu", 161, 4, 318, 38, 1, 1, 1, 1 };
+game_data chobo = { "chobo", 47, 14, 311, 689, 23, 1, 1, 46, true };
+game_data jungsu = { "jungsu", 59, 12, 286, 714, 1, 5, 55, 58, false };
+game_data gosu = { "gosu", 161, 4, 318, 682, 80, 86, 160, 159, false };
 game_data type;
 
 int playerX, playerY;
 bool map[161][161]; //wall = true
-SceneID main_screen, ingame_screen;
-ObjectID thumbs_up[4], wall[25921], player, main_button;
+bool escapable = false;
+SceneID main_screen, ingame_screen, loading_screen;
+ObjectID thumbs_up[4], wall[25921], player, main_button, escape_button;
 clock_t start, finish;
 
 int x_converter(int i) { return type.zeroX + i * type.pixel_size; }
@@ -98,12 +100,33 @@ SceneID ingame_init(game_data temp) {
 }
 
 void mouseCallback(ObjectID object, int x, int y, MouseAction action) {
-	if (object == chobo.button)		  enterScene(ingame_init(chobo));
-	else if (object == jungsu.button) enterScene(ingame_init(jungsu));
-	else if (object == gosu.button)	  enterScene(ingame_init(gosu));
+	bool flag = false;
+	if (object == chobo.button && chobo.playable) enterScene(ingame_init(chobo));
+	else if (object == jungsu.button && jungsu.playable) enterScene(ingame_init(jungsu));
+	else if (object == gosu.button && gosu.playable) enterScene(ingame_init(gosu));
 	else if (object == main_button) {
+		if (type.name == chobo.name) {
+			jungsu.playable = true;
+			setObjectImage(jungsu.button, "Images/jungsu_button.png");
+		}
+		else if (type.name == jungsu.name) {
+			gosu.playable = true;
+			setObjectImage(gosu.button, "Images/gosu_button.png");
+		}
+		else if (type.name == gosu.name) {
+			chobo.playable = false;
+			jungsu.playable = false;
+			gosu.playable = false;
+			escapable = true;
+
+			setObjectImage(chobo.button, "Images/chobo_button_closed.png");
+			setObjectImage(jungsu.button, "Images/jungsu_button_closed.png");
+			setObjectImage(gosu.button, "Images/gosu_button_closed.png");
+			setObjectImage(escape_button, "Images/escape_button.png");
+		}
+
 		enterScene(main_screen);
-		hideObject(main_button); 
+		hideObject(main_button);
 		hideObject(player);
 		for (int i = 0; i < 25921; i++) {
 			hideObject(wall[i]);
@@ -116,6 +139,7 @@ void mouseCallback(ObjectID object, int x, int y, MouseAction action) {
 		}
 		for (int i = 0; i < 4; i++) hideObject(thumbs_up[i]);
 	}
+	else if (object == escape_button && escapable) endGame();
 }
 
 SceneID init() {
@@ -127,12 +151,14 @@ SceneID init() {
 	
 	main_screen = createScene("main", "Images/main_screen.png");
 	ingame_screen = createScene("ingame", "Images/ingame_screen.png");
-	
+	loading_screen = createScene("loading", "Images/loading.png");
+
 	chobo.button =  createObject("Images/chobo_button.png",  main_screen, 520, 310, true);
-	jungsu.button = createObject("Images/jungsu_button.png", main_screen, 520, 180, true);
-	gosu.button =   createObject("Images/gosu_button.png",   main_screen, 520, 50,  true);
+	jungsu.button = createObject("Images/jungsu_button_closed.png", main_screen, 520, 180, true);
+	gosu.button =   createObject("Images/gosu_button_closed.png",   main_screen, 520, 50,  true);
 
 	main_button = createObject("Images/main_button.png", ingame_screen, 80, 150, false);
+	escape_button = createObject("Images/escape_button_closed.png", main_screen, 780, 180, true);
 
 	thumbs_up[0] = createObject("Images/thumbs_up0.png", ingame_screen, 0,   0,   false);
 	thumbs_up[1] = createObject("Images/thumbs_up1.png", ingame_screen, 0,   570, false);
