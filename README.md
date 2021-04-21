@@ -1,6 +1,6 @@
 # Welcome_maze
 
-Author : 소프트웨어학부 21학번 김도엽
+Author : 소프트웨어학부
 
 제목 : Welcome! MAZE
 
